@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "AIDIALECTIC",
   "version": "1.0.0",
-  "description": "Structured dialectic between Claude and Gemini — pursue truth through rigorous cross-examination between AI analysts.",
+  "description": "Produce rigorously vetted, exportable reasoning sessions using Claude and Gemini. No copy-paste needed.",
   "permissions": [
     "sidePanel",
     "storage",
