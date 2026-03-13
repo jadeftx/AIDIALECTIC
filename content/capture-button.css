@@ -1,0 +1,116 @@
+/* Floating transfer button injected on claude.ai and gemini.google.com */
+#ce-capture-btn {
+  position: fixed;
+  bottom: 100px;
+  right: 24px;
+  z-index: 999999;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  background: linear-gradient(135deg, #2B6CB0, #63A5E8);
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s, background 0.3s;
+  user-select: none;
+  opacity: 0.85;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1;
+}
+
+/* Push mode — blue tint to distinguish from pull mode */
+#ce-capture-btn.push-mode {
+  background: linear-gradient(135deg, #4992EA, #2B6CB0);
+}
+
+#ce-capture-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+  opacity: 1;
+}
+
+#ce-capture-btn:active {
+  transform: scale(0.95);
+}
+
+#ce-capture-btn.captured {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+#ce-capture-btn.dragging {
+  opacity: 0.6;
+  cursor: grabbing;
+}
+
+/* Stale — extension context invalidated after update */
+#ce-capture-btn.stale {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+  border-color: rgba(239, 68, 68, 0.4);
+  opacity: 0.7;
+  animation: cePulseStale 2s ease-in-out infinite;
+}
+
+@keyframes cePulseStale {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 0.5; }
+}
+
+/* Tooltip */
+#ce-capture-btn::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  right: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: #25262D;
+  color: #E8E8EC;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 400;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+#ce-capture-btn:hover::after {
+  opacity: 1;
+}
+
+/* Notification toast — positioned dynamically by JS next to the arrow button */
+#ce-capture-toast {
+  position: fixed;
+  z-index: 999998;
+  background: #25262D;
+  color: #E8E8EC;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: ceFadeInDown 0.2s ease-out;
+}
+
+#ce-capture-toast.success {
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+#ce-capture-toast.error {
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+@keyframes ceFadeInDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}

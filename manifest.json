@@ -1,0 +1,55 @@
+{
+  "manifest_version": 3,
+  "name": "AIDIALECTIC",
+  "version": "1.0.0",
+  "description": "Structured dialectic between Claude and Gemini — pursue truth through rigorous cross-examination between AI analysts.",
+  "permissions": [
+    "sidePanel",
+    "storage",
+    "clipboardWrite",
+    "activeTab",
+    "webNavigation",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://claude.ai/*",
+    "https://gemini.google.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "side_panel": {
+    "default_path": "sidepanel/sidepanel.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://claude.ai/*"],
+      "js": ["content/shared.js", "content/provider-base.js", "content/claude.js"],
+      "css": ["content/capture-button.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://gemini.google.com/*"],
+      "js": ["content/shared.js", "content/provider-base.js", "content/gemini.js"],
+      "css": ["content/capture-button.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "AIDIALECTIC"
+  },
+  "commands": {
+    "inject-captured": {
+      "suggested_key": {
+        "default": "Alt+Shift+D",
+        "mac": "Alt+Shift+D"
+      },
+      "description": "Inject captured AI response into active input field"
+    }
+  }
+}

@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AIDIALECTIC</title>
+    <link rel="stylesheet" href="sidepanel.css" />
+  </head>
+  <body>
+    <!-- Header -->
+    <header id="header">
+      <!-- Row 1: Branding + icon actions -->
+      <div class="header-brand">
+        <div class="brand-left">
+          <div class="brand-logo-composite">
+            <img
+              id="brand-logo"
+              class="brand-logo-bg"
+              src="../icons/socrates-head.png"
+              data-light="../icons/socrates-head.png"
+              data-dark="../icons/socrates-head-dark.png"
+              alt=""
+              width="64"
+              height="64"
+            />
+            <img class="brand-logo-icon" src="../icons/aidialectic-logo.png" alt="" width="36" height="36" />
+          </div>
+          <div class="brand-text">
+            <h1>AIDIALECTIC</h1>
+            <span class="subtitle">CONSENSUS WORKFLOW</span>
+          </div>
+        </div>
+        <div class="header-actions">
+          <div class="export-dropdown-wrapper">
+            <button id="btn-export-toggle" title="Export transcript" class="icon-btn">
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+            </button>
+            <div id="export-dropdown" class="export-dropdown hidden">
+              <button id="btn-export-md-header" class="export-dropdown-item">Markdown</button>
+              <button id="btn-export-json-header" class="export-dropdown-item">JSON</button>
+              <button id="btn-push-github-header" class="export-dropdown-item">GitHub</button>
+              <div id="export-dropdown-status" class="export-status hidden"></div>
+            </div>
+          </div>
+          <!-- Combined moon/sun theme toggle pill -->
+          <button id="btn-theme-toggle" title="Toggle light/dark mode" class="theme-toggle-pill">
+            <span class="theme-toggle-slider"></span>
+            <svg
+              id="theme-icon-moon"
+              class="theme-pill-icon"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+            <svg
+              id="theme-icon-sun"
+              class="theme-pill-icon"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="5" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </svg>
+          </button>
+          <button id="btn-settings" title="Settings" class="icon-btn">
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="3" />
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+              />
+            </svg>
+          </button>
+          <button id="btn-help" title="How it works" class="icon-btn">
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Row 2: Toolbar — session controls + font size -->
+      <div class="header-toolbar">
+        <button id="btn-sessions-list" class="toolbar-btn toolbar-history">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+          HISTORY
+        </button>
+        <button id="btn-new-session" class="toolbar-btn toolbar-new-session">
+          START NEW SESSION
+          <span class="toolbar-plus">+</span>
+        </button>
+        <div class="font-size-controls">
+          <button id="btn-font-down" title="Zoom out" class="font-btn">A-</button>
+          <button id="btn-font-up" title="Zoom in" class="font-btn">A+</button>
+        </div>
+      </div>
+
+      <!-- Row 3: Status bar -->
+      <div class="header-status">
+        <span class="status-label">STATUS:</span>
+        <span id="turn-indicator" class="turn-indicator">Start a session</span>
+        <span id="round-counter" class="round-counter-badge"></span>
+      </div>
+    </header>
+
+    <!-- Views -->
+    <main id="main">
+      <!-- Conversation View (default) -->
+      <div id="view-conversation" class="view active">
+        <!-- Initial context input -->
+        <div id="initial-context-section" class="context-section">
+          <label for="initial-context">What question are you exploring?</label>
+          <textarea
+            id="initial-context"
+            placeholder="Paste your initial question or context here..."
+            rows="4"
+          ></textarea>
+          <div class="context-actions">
+            <button id="btn-start-session" class="btn btn-primary">Start Session</button>
+          </div>
+        </div>
+
+        <!-- Conversation thread -->
+        <div id="thread" class="thread"></div>
+
+        <!-- Interjection area (reply to same model) -->
+        <div id="interjection-section" class="interjection-section hidden">
+          <div class="interjection-header">
+            <span>Reply to <span id="interject-target">—</span></span>
+            <button id="btn-cancel-interject" class="btn btn-sm btn-ghost">Cancel</button>
+          </div>
+          <textarea id="interjection-text" placeholder="Add corrections, context, or direction..." rows="3"></textarea>
+          <button id="btn-submit-interject" class="btn btn-primary btn-sm">
+            Send to <span id="interject-target-btn">—</span>
+          </button>
+        </div>
+
+        <!-- Inline insert form (appears between messages when + is clicked) -->
+        <div id="inline-insert-form" class="inline-insert-form hidden">
+          <div class="inline-insert-header">
+            <span>Insert Message</span>
+            <button id="btn-cancel-inline-insert" class="btn btn-sm btn-ghost">Cancel</button>
+          </div>
+          <div class="inline-insert-controls">
+            <label class="inline-insert-label">Author:</label>
+            <select id="inline-insert-source" class="select-input">
+              <option value="claude">Claude</option>
+              <option value="gemini">Gemini</option>
+              <option value="user">User</option>
+            </select>
+          </div>
+          <textarea id="inline-insert-content" placeholder="Paste or type the message content..." rows="3"></textarea>
+          <button id="btn-submit-inline-insert" class="btn btn-primary btn-sm">Insert</button>
+        </div>
+
+        <!-- Action bar — round actions -->
+        <div id="action-bar" class="action-bar hidden">
+          <button id="btn-interject" class="btn btn-secondary">Reply to <span id="reply-target">—</span></button>
+          <button id="btn-prepare-handoff" class="btn btn-primary">
+            Hand off to <span id="handoff-target">—</span>
+          </button>
+        </div>
+
+        <!-- Consensus bar — separate, visually distinct end-of-session action -->
+        <div id="consensus-bar" class="consensus-bar hidden">
+          <button id="btn-consensus" class="btn btn-consensus-action">Mark Consensus</button>
+        </div>
+      </div>
+
+      <!-- Sessions List View -->
+      <div id="view-sessions" class="view">
+        <div class="view-header">
+          <h2>Past Sessions</h2>
+          <button id="btn-back-conversation" class="btn btn-sm btn-ghost">&larr; Back</button>
+        </div>
+        <div id="sessions-list" class="sessions-list"></div>
+      </div>
+      <!-- DeftX footer -->
+      <div class="deftx-footer">
+        <a href="https://www.deftx.com/aidialectic" target="_blank" rel="noopener" title="DeftX">
+          <img
+            class="deftx-footer-logo"
+            src="../icons/DeftX_logo.png"
+            data-light="../icons/DeftX_logo.png"
+            data-dark="../icons/Deftx_logo_dark.png"
+            alt="DeftX"
+            height="32"
+          />
+        </a>
+      </div>
+    </main>
+
+    <!-- Export modal -->
+    <div id="export-modal" class="modal hidden">
+      <div class="modal-backdrop"></div>
+      <div class="modal-content">
+        <button id="btn-close-modal-x" class="modal-close" title="Close">&times;</button>
+        <h3>Export Transcript</h3>
+        <div class="modal-actions">
+          <button id="btn-export-md" class="btn btn-primary">Download Markdown</button>
+          <button id="btn-export-json" class="btn btn-secondary">Download JSON</button>
+          <button id="btn-push-github" class="btn btn-secondary">Push to GitHub</button>
+          <button id="btn-close-modal" class="btn btn-ghost">Cancel</button>
+        </div>
+        <div id="export-status" class="export-status hidden"></div>
+        <div class="modal-footer-wrap">
+          <div class="bmc-footer">
+            <a
+              href="https://buymeacoffee.com/yojimboston"
+              target="_blank"
+              rel="noopener"
+              title="Buy Me a Coffee"
+              class="bmc-link"
+            >
+              <img src="../icons/bmc-button.svg" alt="Buy Me a Coffee" height="36" />
+            </a>
+          </div>
+          <div class="deftx-corner">
+            <a href="https://www.deftx.com/aidialectic" target="_blank" rel="noopener" title="DeftX">
+              <img
+                class="deftx-footer-logo"
+                src="../icons/DeftX_logo.png"
+                data-light="../icons/DeftX_logo.png"
+                data-dark="../icons/Deftx_logo_dark.png"
+                alt="DeftX"
+                height="18"
+              />
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Help modal -->
+    <div id="help-modal" class="modal hidden">
+      <div class="modal-backdrop"></div>
+      <div class="modal-content modal-content-wide">
+        <button id="btn-close-help" class="modal-close" title="Close">&times;</button>
+        <div class="help-hero">
+          <img src="../icons/aidialectic-logo-2x.png" alt="AIDIALECTIC" class="help-hero-logo" />
+          <div class="help-hero-title">AIDIALECTIC</div>
+          <div class="help-hero-version" id="help-version"></div>
+        </div>
+        <h3>How It Works</h3>
+        <div class="help-body">
+          <ol class="help-steps">
+            <li>
+              <strong>Set up your workspace.</strong> Open Claude and Gemini in a split-tab view with the AIDIALECTIC
+              panel open for a three-column layout.
+            </li>
+            <li>
+              <strong>Start a session.</strong> Enter your topic or question as the initial context. Optionally set a
+              system context, length modifier, and tone modifier in Settings.
+            </li>
+            <li>
+              <strong>Push a prompt.</strong> Click the floating arrow button on the AI tab to paste the generated
+              prompt. The turn indicator shows whose turn it is.
+            </li>
+            <li>
+              <strong>Capture the response.</strong> After the AI finishes, click the arrow button to pull the response
+              back into the panel. (Or enable experimental auto-capture in Settings.)
+            </li>
+            <li>
+              <strong>Steer the reasoning.</strong> Interject at any point to redirect, add context, or challenge either
+              model. Insert messages anywhere in the thread. Hand off to the next model when ready.
+            </li>
+            <li>
+              <strong>Reach consensus.</strong> When the reasoning is where you want it, mark consensus to close the
+              session. Reopen anytime to continue.
+            </li>
+            <li>
+              <strong>Export your work.</strong> Download as Markdown, JSON, or push directly to GitHub. The full
+              reasoning chain is preserved: who said what, in what order, with round structure intact.
+            </li>
+          </ol>
+          <div class="help-tip">
+            <strong>Arrow button modes:</strong> Push (outward arrow) pastes a prompt into the AI. Pull (inward arrow)
+            captures the AI's response. Click the turn indicator in the panel header to toggle whose turn it is.
+          </div>
+          <div class="help-tip" style="margin-top: 8px">
+            <strong>Mistakes happen:</strong> If you forget to capture a response, capture it twice, or things get out
+            of order -- just delete or insert messages anywhere in the thread to fix it. Click a message's author label
+            to change its attribution.
+          </div>
+          <div class="help-tip" style="margin-top: 8px">
+            <strong>Session history:</strong> Click the History button to browse, load, or delete past sessions. Pick up
+            exactly where you left off.
+          </div>
+          <div class="help-tip" style="margin-top: 8px">
+            <strong>Bulk management:</strong> Export All, Import, and Clear All are available in Settings for managing
+            your full session library.
+          </div>
+          <div class="help-tip" style="margin-top: 8px">
+            <strong>Keyboard shortcut:</strong> <code>Alt+Shift+D</code> opens the AIDIALECTIC panel from any tab.
+          </div>
+        </div>
+        <div class="modal-footer-wrap">
+          <div class="bmc-footer">
+            <a
+              href="https://buymeacoffee.com/yojimboston"
+              target="_blank"
+              rel="noopener"
+              title="Buy Me a Coffee"
+              class="bmc-link"
+            >
+              <img src="../icons/bmc-button.svg" alt="Buy Me a Coffee" height="36" />
+            </a>
+          </div>
+          <div class="deftx-corner">
+            <a href="https://www.deftx.com/aidialectic" target="_blank" rel="noopener" title="DeftX">
+              <img
+                class="deftx-footer-logo"
+                src="../icons/DeftX_logo.png"
+                data-light="../icons/DeftX_logo.png"
+                data-dark="../icons/Deftx_logo_dark.png"
+                alt="DeftX"
+                height="18"
+              />
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings modal -->
+    <div id="settings-modal" class="modal hidden">
+      <div class="modal-backdrop"></div>
+      <div class="modal-content modal-content-wide settings-panel">
+        <button id="btn-close-settings" class="modal-close" title="Close">&times;</button>
+        <h3>Settings</h3>
+
+        <div class="settings-section">
+          <div class="settings-section-title">GitHub Integration</div>
+          <div class="settings-field">
+            <label for="settings-github-repo">Repository</label>
+            <input type="text" id="settings-github-repo" placeholder="owner/repo" />
+            <div class="settings-field-help">
+              GitHub repo for auto-pushing transcripts (e.g., myuser/consensus-logs)
+            </div>
+          </div>
+          <div class="settings-field">
+            <label for="settings-github-path">Path in Repository</label>
+            <input type="text" id="settings-github-path" placeholder="transcripts/" />
+            <div class="settings-field-help">Directory path where transcripts will be saved (optional)</div>
+          </div>
+          <div class="settings-field">
+            <label for="settings-github-token">Personal Access Token</label>
+            <input type="password" id="settings-github-token" placeholder="ghp_..." />
+            <div class="settings-field-help">Token with repo write permissions. Stored locally.</div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">System Context</div>
+          <div class="settings-field">
+            <label for="settings-system-context">Default Context</label>
+            <textarea
+              id="settings-system-context"
+              rows="3"
+              placeholder="e.g., I'm a senior engineer evaluating distributed system architectures..."
+            ></textarea>
+            <div class="settings-field-help">Prepended to every handoff prompt to frame the conversation.</div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">Response Modifiers</div>
+          <div class="settings-field-help" style="margin-bottom: 6px">
+            Injected into every handoff prompt. Change mid-session to adjust on the fly.
+          </div>
+          <div class="modifier-row">
+            <div class="modifier-group">
+              <label class="modifier-label" for="mod-length">Length</label>
+              <select id="mod-length" class="modifier-select">
+                <option value="normal">Normal</option>
+                <option value="short">Short</option>
+                <option value="deep">Deep Dive</option>
+              </select>
+            </div>
+            <div class="modifier-group">
+              <label class="modifier-label" for="mod-tone">Tone</label>
+              <select id="mod-tone" class="modifier-select">
+                <option value="default">Default</option>
+                <option value="clinical">Clinical</option>
+                <option value="socratic">Socratic</option>
+                <option value="sassy">Sassy</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">Experimental</div>
+          <div class="settings-toggle-row">
+            <div class="settings-toggle-label">
+              <span>Auto-Capture Responses</span>
+              <span>MutationObserver to detect new AI responses. May be unreliable.</span>
+            </div>
+            <div class="toggle" id="settings-toggle-autocapture"></div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">Data</div>
+          <div class="settings-field">
+            <div style="display: flex; gap: 8px; flex-wrap: wrap">
+              <button class="btn btn-secondary" id="settings-btn-export-all">Export All Sessions</button>
+              <button class="btn btn-secondary" id="settings-btn-import-all">Import Sessions</button>
+            </div>
+            <input type="file" id="settings-import-file" accept=".json" style="display: none" />
+            <div class="settings-field-help">Back up or restore sessions as JSON.</div>
+          </div>
+          <div class="settings-field" style="margin-top: 8px">
+            <button class="btn btn-ghost" id="settings-btn-clear-data" style="color: var(--danger-color)">
+              Clear All Sessions
+            </button>
+            <div class="settings-field-help">Permanently delete all saved sessions from local storage.</div>
+          </div>
+        </div>
+
+        <div class="settings-actions">
+          <button class="btn btn-primary" id="settings-btn-save">Save Settings</button>
+        </div>
+        <div class="settings-status" id="settings-status"></div>
+      </div>
+    </div>
+
+    <script src="../lib/marked.min.js"></script>
+    <script src="../utils/helpers.js"></script>
+    <script src="collapse.js"></script>
+    <script src="prompts.js"></script>
+    <script src="sidepanel.js"></script>
+  </body>
+</html>
