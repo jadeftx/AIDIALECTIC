@@ -4,7 +4,11 @@
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-<video src="AIDIALECTIC_zombie_demo.mp4" width="100%" controls></video>
+
+
+https://github.com/user-attachments/assets/b89653eb-d2a1-4bde-8cde-a846ede8cb01
+
+
 
 ---
 
@@ -12,7 +16,7 @@
 
 AIDIALECTIC replaces the manual copy-paste loop between Claude and Gemini with a structured side-panel workspace. Instead of switching tabs and moving text by hand, you run multi-round reasoning sessions where each AI critiques, refines, and builds on the other's thinking. The result: rigorously vetted outputs with a complete reasoning chain you can export and keep.
 
-Works with your existing Claude and Gemini subscriptions. No API keys, no external servers, no accounts to create.
+Works with your existing Claude and Gemini subscriptions. No API keys, no external servers, no accounts to create.  Why? To take advantage of the subsidized tokens of subscriptions. Using the leading edge models for sessions via API is faster and fewer clicks, and can cost $2-$5 in tokens per session. In addition, reading and interjecting is key to get the very best results. 
 
 ## Quick Start
 
