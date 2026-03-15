@@ -428,6 +428,17 @@
         </div>
 
         <div class="settings-section">
+          <div class="settings-section-title">Mode</div>
+          <div class="settings-toggle-row">
+            <div class="settings-toggle-label">
+              <span>Brainstorm Mode</span>
+              <span>Switch from convergent dialectic to divergent ideation.</span>
+            </div>
+            <div class="toggle" id="settings-toggle-brainstorm"></div>
+          </div>
+        </div>
+
+        <div class="settings-section">
           <div class="settings-section-title">Response Modifiers</div>
           <div class="settings-field-help" style="margin-bottom: 6px">
             Injected into every handoff prompt. Change mid-session to adjust on the fly.
@@ -448,6 +459,19 @@
                 <option value="clinical">Clinical</option>
                 <option value="socratic">Socratic</option>
                 <option value="sassy">Sassy</option>
+              </select>
+            </div>
+            <div class="modifier-group" id="modifier-group-vector" style="display:none">
+              <label class="modifier-label" for="mod-vector">Ideation Vector</label>
+              <select id="mod-vector" class="modifier-select">
+                <option value="all">ALL</option>
+                <option value="who">Who</option>
+                <option value="what">What</option>
+                <option value="when">When</option>
+                <option value="where">Where</option>
+                <option value="why">Why</option>
+                <option value="how">How</option>
+                <option value="what-if">What If</option>
               </select>
             </div>
           </div>

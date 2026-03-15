@@ -596,7 +596,7 @@ async function pushToGitHub(session, settings) {
 
   const filename = `consensus-${session.id.slice(0, 8)}-${formatDateForFilename(session.createdAt)}.md`;
   const filePath = githubPath ? `${githubPath.replace(/\/$/, '')}/${filename}` : filename;
-  const content = generateMarkdownExport(session);
+  const content = generateMarkdownExport(session, settings);
   const contentBase64 = btoa(unescape(encodeURIComponent(content)));
 
   let sha = null;
@@ -647,7 +647,7 @@ async function pushToGitHub(session, settings) {
 // ===== Export Helpers =====
 // NOTE: Duplicated across sidepanel and background for MV3 service worker stability. Keep in sync.
 
-function generateMarkdownExport(session) {
+function generateMarkdownExport(session, settings) {
   const lines = [];
   lines.push(`# AIDIALECTIC Transcript`);
   lines.push('');
@@ -667,6 +667,7 @@ function generateMarkdownExport(session) {
   lines.push('## Conversation');
   lines.push('');
 
+  const isBrainstorm = settings && settings.brainstormMode;
   let lastRound = 0;
   for (const msg of session.messages) {
     if (msg.round && msg.round !== lastRound) {
@@ -683,7 +684,25 @@ function generateMarkdownExport(session) {
 
     lines.push(`#### ${label} — ${time}${consensusTag}`);
     lines.push('');
-    lines.push(msg.content);
+
+    if (isBrainstorm && msg.source !== 'user') {
+      const round = msg.round || 0;
+      let ideaNum = 0;
+      lines.push(
+        msg.content
+          .split('\n')
+          .map((line) => {
+            if (/^\*{0,2}\[The\s/.test(line.trimStart())) {
+              ideaNum++;
+              return `[R${round}-${ideaNum}] ${line}`;
+            }
+            return line;
+          })
+          .join('\n'),
+      );
+    } else {
+      lines.push(msg.content);
+    }
     lines.push('');
   }
 
