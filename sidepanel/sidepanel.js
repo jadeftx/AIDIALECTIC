@@ -658,18 +658,18 @@
     }
 
     // Brainstorm idea coordinates: prepend [R#-#] to idea lines
+    // Ideas may be in separate <p> tags OR within one <p> separated by <br>.
+    // Use innerHTML replacement to catch both cases.
     if (settings.brainstormMode && msg.source !== 'user') {
       const round = msg.round || 0;
       let ideaNum = 0;
-      body.querySelectorAll('p, li').forEach((el) => {
-        if (/^\[The\s/.test(el.textContent.trimStart())) {
+      body.innerHTML = body.innerHTML.replace(
+        /(<p[^>]*>|<li[^>]*>|<br\s*\/?>)\s*((?:<(?:strong|em|b)>)*)(\[The\s)/gi,
+        (match, tag, formatting, bracket) => {
           ideaNum++;
-          const coord = document.createElement('span');
-          coord.className = 'idea-coord';
-          coord.textContent = `[R${round}-${ideaNum}] `;
-          el.insertBefore(coord, el.firstChild);
-        }
-      });
+          return `${tag}${formatting}<span class="idea-coord">[R${round}-${ideaNum}]</span> ${bracket}`;
+        },
+      );
     }
 
     div.querySelector('.btn-copy').addEventListener('click', (e) => {
