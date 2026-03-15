@@ -68,6 +68,12 @@
     btnFontDown: $('#btn-font-down'),
     modLength: $('#mod-length'),
     modTone: $('#mod-tone'),
+    modVector: $('#mod-vector'),
+    modifierGroupVector: $('#modifier-group-vector'),
+    toggleBrainstorm: $('#settings-toggle-brainstorm'),
+    modLengthLabel: document.querySelector('label[for="mod-length"]'),
+    modToneLabel: document.querySelector('label[for="mod-tone"]'),
+    brandSubtitle: $('.brand-text .subtitle'),
   };
 
   // ===== Init =====
@@ -76,6 +82,9 @@
     await initTheme();
     await initUIZoom();
     await loadSettings();
+    if (els.brandSubtitle) {
+      els.brandSubtitle.textContent = settings.brainstormMode ? 'BRAINSTORM SESSION' : 'CONSENSUS WORKFLOW';
+    }
     await loadCurrentSession();
     bindEvents();
     bindSettingsEvents();
@@ -169,6 +178,66 @@
     });
   }
 
+  // ===== Brainstorm UI =====
+
+  function applyBrainstormUI(active) {
+    // Update header subtitle
+    if (els.brandSubtitle) {
+      els.brandSubtitle.textContent = active ? 'BRAINSTORM SESSION' : 'CONSENSUS WORKFLOW';
+    }
+
+    // Show/hide vector dropdown
+    els.modifierGroupVector.style.display = active ? '' : 'none';
+
+    // Swap Length <-> Expansion
+    if (els.modLengthLabel) {
+      els.modLengthLabel.textContent = active ? 'Expansion' : 'Length';
+    }
+    const lengthSelect = els.modLength;
+    lengthSelect.innerHTML = '';
+    if (active) {
+      [['sparks', 'Sparks'], ['seeds', 'Seeds'], ['branches', 'Branches']].forEach(([val, label]) => {
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = label;
+        lengthSelect.appendChild(opt);
+      });
+      lengthSelect.value = settings.modExpansion || 'sparks';
+    } else {
+      [['normal', 'Normal'], ['short', 'Short'], ['deep', 'Deep Dive']].forEach(([val, label]) => {
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = label;
+        lengthSelect.appendChild(opt);
+      });
+      lengthSelect.value = settings.modLength || 'normal';
+    }
+
+    // Swap Tone <-> Perspective
+    if (els.modToneLabel) {
+      els.modToneLabel.textContent = active ? 'Perspective' : 'Tone';
+    }
+    const toneSelect = els.modTone;
+    toneSelect.innerHTML = '';
+    if (active) {
+      [['rapid-fire', 'Rapid-Fire'], ['contrarian', 'Contrarian'], ['first-principles', 'First Principles']].forEach(([val, label]) => {
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = label;
+        toneSelect.appendChild(opt);
+      });
+      toneSelect.value = settings.modPerspective || 'rapid-fire';
+    } else {
+      [['default', 'Default'], ['clinical', 'Clinical'], ['socratic', 'Socratic'], ['sassy', 'Sassy']].forEach(([val, label]) => {
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = label;
+        toneSelect.appendChild(opt);
+      });
+      toneSelect.value = settings.modTone || 'default';
+    }
+  }
+
   // ===== Settings Modal =====
 
   function openSettingsModal() {
@@ -177,10 +246,12 @@
     $('#settings-github-path').value = settings.githubPath || '';
     $('#settings-github-token').value = settings.githubToken || '';
     $('#settings-system-context').value = settings.systemContext || '';
-    els.modLength.value = settings.modLength || 'normal';
-    els.modTone.value = settings.modTone || 'default';
     const toggle = $('#settings-toggle-autocapture');
     toggle.classList.toggle('active', !!settings.autoCapture);
+    els.toggleBrainstorm.classList.toggle('active', !!settings.brainstormMode);
+    const brainstormActive = !!settings.brainstormMode;
+    applyBrainstormUI(brainstormActive);
+    els.modVector.value = settings.modVector || 'all';
     modal.classList.remove('hidden');
   }
 
@@ -189,17 +260,26 @@
   }
 
   function saveSettingsModal() {
+    const brainstormActive = els.toggleBrainstorm.classList.contains('active');
     // Merge with existing settings so we never lose keys not shown in the modal
-    settings = {
+    const updated = {
       ...settings,
       githubRepo: $('#settings-github-repo').value.trim(),
       githubPath: $('#settings-github-path').value.trim(),
       githubToken: $('#settings-github-token').value.trim(),
       systemContext: $('#settings-system-context').value.trim(),
-      modLength: els.modLength.value,
-      modTone: els.modTone.value,
       autoCapture: $('#settings-toggle-autocapture').classList.contains('active'),
+      brainstormMode: brainstormActive,
+      modVector: els.modVector.value,
     };
+    if (brainstormActive) {
+      updated.modExpansion = els.modLength.value;
+      updated.modPerspective = els.modTone.value;
+    } else {
+      updated.modLength = els.modLength.value;
+      updated.modTone = els.modTone.value;
+    }
+    settings = updated;
     chrome.storage.local.set({ ce_settings: settings }, () => {
       showSettingsStatus('Settings saved!', 'success');
     });
@@ -277,6 +357,10 @@
     $('#settings-btn-clear-data').addEventListener('click', settingsClearData);
     $('#settings-toggle-autocapture').addEventListener('click', () => {
       $('#settings-toggle-autocapture').classList.toggle('active');
+    });
+    els.toggleBrainstorm.addEventListener('click', () => {
+      els.toggleBrainstorm.classList.toggle('active');
+      applyBrainstormUI(els.toggleBrainstorm.classList.contains('active'));
     });
   }
 
@@ -457,10 +541,10 @@
       // Consensus bar: show toggle (mark / unmark)
       els.consensusBar.classList.remove('hidden');
       if (session.consensusReached) {
-        els.btnConsensus.textContent = 'Reopen Session';
+        els.btnConsensus.textContent = settings.brainstormMode ? 'Reopen Brainstorm' : 'Reopen Session';
         els.btnConsensus.classList.add('btn-consensus-reopen');
       } else {
-        els.btnConsensus.textContent = 'Mark Consensus';
+        els.btnConsensus.textContent = settings.brainstormMode ? 'End Brainstorm' : 'Mark Consensus';
         els.btnConsensus.classList.remove('btn-consensus-reopen');
       }
     } else {
@@ -571,6 +655,21 @@
       body.innerHTML = marked.parse(msg.content, { breaks: true });
     } else {
       body.textContent = msg.content;
+    }
+
+    // Brainstorm idea coordinates: prepend [R#-#] to idea lines
+    // Ideas may be in separate <p> tags OR within one <p> separated by <br>.
+    // Use innerHTML replacement to catch both cases.
+    if (settings.brainstormMode && msg.source !== 'user') {
+      const round = msg.round || 0;
+      let ideaNum = 0;
+      body.innerHTML = body.innerHTML.replace(
+        /(<p[^>]*>|<li[^>]*>|<br\s*\/?>)\s*((?:<(?:strong|em|b)>)*)(\[The\s)/gi,
+        (match, tag, formatting, bracket) => {
+          ideaNum++;
+          return `${tag}${formatting}<span class="idea-coord">[R${round}-${ideaNum}]</span> ${bracket}`;
+        },
+      );
     }
 
     div.querySelector('.btn-copy').addEventListener('click', (e) => {
@@ -807,7 +906,10 @@
         }
       });
     } else {
-      if (!confirm('Mark the last response as the consensus result?')) return;
+      const confirmMsg = settings.brainstormMode
+        ? 'End this brainstorm session?'
+        : 'Mark the last response as the consensus result?';
+      if (!confirm(confirmMsg)) return;
       chrome.runtime.sendMessage({ type: 'MARK_CONSENSUS' }, (response) => {
         if (response && response.session) {
           session = response.session;
@@ -857,7 +959,26 @@
 
   function exportJSON() {
     if (!session) return;
-    const json = JSON.stringify(session, null, 2);
+    let exportData = session;
+    if (settings.brainstormMode) {
+      exportData = {
+        ...session,
+        messages: session.messages.map((msg) => {
+          if (msg.source === 'user') return msg;
+          const round = msg.round || 0;
+          const ideas = [];
+          let ideaNum = 0;
+          msg.content.split('\n').forEach((line) => {
+            if (/^\*{0,2}\[The\s/.test(line.trimStart())) {
+              ideaNum++;
+              ideas.push({ ideaIndex: `R${round}-${ideaNum}`, text: line });
+            }
+          });
+          return ideas.length > 0 ? { ...msg, ideas } : msg;
+        }),
+      };
+    }
+    const json = JSON.stringify(exportData, null, 2);
     downloadFile(json, exportFilename('json'), 'application/json');
     showExportStatus('JSON downloaded!', 'success');
   }
@@ -959,7 +1080,25 @@
 
       lines.push(`#### ${label} — ${time}${consensusTag}`);
       lines.push('');
-      lines.push(msg.content);
+
+      if (settings.brainstormMode && msg.source !== 'user') {
+        const round = msg.round || 0;
+        let ideaNum = 0;
+        lines.push(
+          msg.content
+            .split('\n')
+            .map((line) => {
+              if (/^\*{0,2}\[The\s/.test(line.trimStart())) {
+                ideaNum++;
+                return `[R${round}-${ideaNum}] ${line}`;
+              }
+              return line;
+            })
+            .join('\n'),
+        );
+      } else {
+        lines.push(msg.content);
+      }
       lines.push('');
     }
 

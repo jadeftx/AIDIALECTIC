@@ -18,7 +18,56 @@ const TONE_INJECTIONS = {
     'Be sharp, opinionated, and unapologetically direct. Show genuine intellectual impatience when the opposing position has obvious flaws -- express frustration, disbelief, or dry sarcasm. Call out lazy reasoning bluntly. However, your irritation must always be grounded in actual analytical substance -- never substitute attitude for argument. If the opposing model makes a genuinely strong point, grudgingly acknowledge it.',
 };
 
+const EXPANSION_INJECTIONS = {
+  sparks:
+    'Limit output to tagged one-liners. Aim for 10+ ideas. No explanation, no justification. Raw sparks only.',
+  seeds:
+    'Develop each idea with a 2-3 sentence expansion. Include specific variations, edge cases, or unexpected applications. Breadth and depth — but no evaluation.',
+  branches:
+    'Provide a full paragraph per idea with variations and applications. Thoroughness over brevity — but no evaluation or ranking.',
+};
+
+const PERSPECTIVE_INJECTIONS = {
+  'rapid-fire':
+    'Adopt a radically different analytical lens for your ideation. You must generate exactly 9 ideas per round — one for each of the following specific archetypes: [The Hacker], [The Aesthete], [The Futurist], [The Naturalist], [The Capitalist], [The Beginner], [The Psychologist], [The Historian], and [The Athlete]. Tag the lens in brackets at the start of each idea. State each idea as a direct, impersonal assertion derived purely from what that specific archetype values most.',
+  contrarian:
+    'Systematically invert the core assumptions of the topic. Generate ideas that do the exact opposite of conventional wisdom, standard industry practice, or logical next steps. Do not simply negate existing ideas — build viable alternatives from the inversion.',
+  'first-principles':
+    'Strip away all industry assumptions, jargon, and standard practices. Ask "why do we do it this way?" for each concept and build your ideas upward from fundamental physical, behavioral, or logical truths. Name the fundamental truth you\'re building from.',
+};
+
+const VECTOR_INJECTIONS = {
+  who: 'Constrain your ideation entirely to the audience, shifting target users, creating bizarre partnerships, or applying the concept to entirely different demographics.',
+  what: 'Constrain your ideation strictly to tangible outputs — what is actually being built, made, or produced. Focus on concrete deliverables.',
+  when: 'Constrain your ideation entirely to time — time of day, macroeconomic cycles, historical eras, or future timelines.',
+  where: 'Constrain your ideation entirely to location — physical space, geographic constraints, digital environments, or spatial computing.',
+  why: 'Constrain your ideation entirely to motivations, human incentives, emotional resonance, market dynamics, and underlying philosophy.',
+  how: 'Constrain your ideation entirely to novel implementations, bizarre technical workarounds, and physical/digital mechanics.',
+  'what-if':
+    'Constrain your ideation by systematically breaking the fundamental laws of the topic (physics, economics, social norms) and building ideas in that void.',
+};
+
 function buildModifierBlock(settings) {
+  if (settings.brainstormMode) {
+    const expansionVal = settings.modExpansion || 'sparks';
+    const perspectiveVal = settings.modPerspective || 'rapid-fire';
+    const vectorVal = settings.modVector || 'all';
+
+    const parts = [];
+    if (EXPANSION_INJECTIONS[expansionVal]) {
+      parts.push(EXPANSION_INJECTIONS[expansionVal]);
+    }
+    if (PERSPECTIVE_INJECTIONS[perspectiveVal]) {
+      parts.push(PERSPECTIVE_INJECTIONS[perspectiveVal]);
+    }
+    if (vectorVal !== 'all' && VECTOR_INJECTIONS[vectorVal]) {
+      parts.push(VECTOR_INJECTIONS[vectorVal]);
+    }
+
+    if (parts.length === 0) return '';
+    return '\n\n### RUNTIME MODIFIERS ###\n' + parts.join('\n');
+  }
+
   const lengthVal = settings.modLength || 'normal';
   const toneVal = settings.modTone || 'default';
 
@@ -43,22 +92,47 @@ function generateInitialPrompt(context, settings) {
     parts.push('');
   }
 
-  parts.push('=== DIALECTIC — ROUND 1 ===');
-  parts.push(
-    'Structured dialectic between independent AI analysts. Challenge errors, defend sound positions, update only when genuinely persuaded. Do not soften disagreements.',
-  );
-  parts.push(
-    'Do NOT produce finished documents, specs, summaries, or deliverables unless the user explicitly asks. Focus on dialectic reasoning and decision-making.',
-  );
-  parts.push('');
-  parts.push('--- INITIAL CONTEXT (msgid#1) ---');
-  parts.push(context);
-  parts.push('');
-  parts.push('--- YOUR TASK ---');
-  parts.push('1. Analyze the initial context thoroughly');
-  parts.push('2. State your position clearly with supporting reasoning');
-  parts.push('3. Identify key assumptions and potential weaknesses in your own analysis');
-  parts.push('4. Provide your complete, honest assessment');
+  if (settings.brainstormMode) {
+    parts.push('=== BRAINSTORM — ROUND 1 ===');
+    parts.push(
+      'Generative ideation between independent AI contributors. Build on every idea presented. Add novel directions the other contributor hasn\'t explored.',
+    );
+    parts.push(
+      'Do not evaluate, critique, rank, or filter ideas. Volume and diversity over quality.',
+    );
+    parts.push(
+      'Do NOT converge on recommendations, narrow to "top picks," or produce polished deliverables unless the user explicitly asks. Focus on expanding the possibility space.',
+    );
+    parts.push(
+      'Focus on conceptual novelty. No abstract jargon as a substitute.',
+    );
+    parts.push('');
+    parts.push('--- INITIAL CONTEXT (msgid#1) ---');
+    parts.push(context);
+    parts.push('');
+    parts.push('--- YOUR TASK ---');
+    parts.push('1. Generate as many distinct ideas as possible related to the initial context');
+    parts.push('2. Explore unexpected angles, tangents, and creative leaps');
+    parts.push('3. Tag each idea with a bracketed label (e.g., [Distribution], [UX], [Pricing])');
+    parts.push('4. Do NOT evaluate or rank — quantity and variety over quality');
+  } else {
+    parts.push('=== DIALECTIC — ROUND 1 ===');
+    parts.push(
+      'Structured dialectic between independent AI analysts. Challenge errors, defend sound positions, update only when genuinely persuaded. Do not soften disagreements.',
+    );
+    parts.push(
+      'Do NOT produce finished documents, specs, summaries, or deliverables unless the user explicitly asks. Focus on dialectic reasoning and decision-making.',
+    );
+    parts.push('');
+    parts.push('--- INITIAL CONTEXT (msgid#1) ---');
+    parts.push(context);
+    parts.push('');
+    parts.push('--- YOUR TASK ---');
+    parts.push('1. Analyze the initial context thoroughly');
+    parts.push('2. State your position clearly with supporting reasoning');
+    parts.push('3. Identify key assumptions and potential weaknesses in your own analysis');
+    parts.push('4. Provide your complete, honest assessment');
+  }
 
   const modifiers = buildModifierBlock(settings);
   return parts.join('\n') + modifiers;
@@ -87,13 +161,29 @@ function generateHandoffPrompt(session, target, settings) {
     upcomingRound = session.round;
   }
 
-  parts.push(`=== DIALECTIC — ROUND ${upcomingRound} ===`);
-  parts.push(
-    'Structured dialectic between independent AI analysts. Challenge errors, defend sound positions, update only when genuinely persuaded. Do not soften disagreements.',
-  );
-  parts.push(
-    'Do NOT produce finished documents, specs, summaries, or deliverables unless the user explicitly asks. Focus on dialectic reasoning and decision-making.',
-  );
+  if (settings.brainstormMode) {
+    parts.push(`=== BRAINSTORM — ROUND ${upcomingRound} ===`);
+    parts.push(
+      'Generative ideation between independent AI contributors. Build on every idea presented. Add novel directions the other contributor hasn\'t explored.',
+    );
+    parts.push(
+      'Do not evaluate, critique, rank, or filter ideas. Volume and diversity over quality.',
+    );
+    parts.push(
+      'Do NOT converge on recommendations, narrow to "top picks," or produce polished deliverables unless the user explicitly asks. Focus on expanding the possibility space.',
+    );
+    parts.push(
+      'Focus on conceptual novelty. No abstract jargon as a substitute.',
+    );
+  } else {
+    parts.push(`=== DIALECTIC — ROUND ${upcomingRound} ===`);
+    parts.push(
+      'Structured dialectic between independent AI analysts. Challenge errors, defend sound positions, update only when genuinely persuaded. Do not soften disagreements.',
+    );
+    parts.push(
+      'Do NOT produce finished documents, specs, summaries, or deliverables unless the user explicitly asks. Focus on dialectic reasoning and decision-making.',
+    );
+  }
   parts.push('');
 
   const targetHasResponded = session.messages.some((m) => m.source === target);
@@ -167,12 +257,26 @@ function generateHandoffPrompt(session, target, settings) {
   }
 
   parts.push('--- YOUR TASK ---');
-  parts.push('1. Identify any errors, unsupported claims, or logical gaps in the above analysis');
-  parts.push('2. Challenge assumptions you disagree with — explain why');
-  parts.push('3. Defend your own prior positions where you believe they are correct');
-  parts.push('4. Update your position only where genuinely persuaded by evidence or logic');
-  parts.push('5. Provide your complete, honest assessment');
+  if (settings.brainstormMode) {
+    parts.push('1. Build on, remix, and extend the ideas already generated — do not repeat them verbatim');
+    parts.push('2. Add entirely new ideas the prior round missed');
+    parts.push('3. Explore unexpected tangents, combinations, and creative leaps');
+    parts.push('4. Tag each idea with a bracketed label (e.g., [Distribution], [UX], [Pricing])');
+    parts.push('5. Do NOT evaluate, rank, or filter — quantity and variety over quality');
+  } else {
+    parts.push('1. Identify any errors, unsupported claims, or logical gaps in the above analysis');
+    parts.push('2. Challenge assumptions you disagree with — explain why');
+    parts.push('3. Defend your own prior positions where you believe they are correct');
+    parts.push('4. Update your position only where genuinely persuaded by evidence or logic');
+    parts.push('5. Provide your complete, honest assessment');
+  }
 
   const modifiers = buildModifierBlock(settings);
-  return parts.join('\n') + modifiers;
+  let prompt = parts.join('\n') + modifiers;
+
+  if (settings.brainstormMode && target === 'gemini') {
+    prompt += '\n\nOUTPUT ONLY THE REQUESTED LIST. NO PREAMBLE. NO CLOSING REMARKS. DO NOT ASK FOLLOW-UP QUESTIONS.';
+  }
+
+  return prompt;
 }

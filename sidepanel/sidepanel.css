@@ -699,6 +699,15 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+/* Brainstorm idea coordinate tag */
+.idea-coord {
+  color: var(--text-muted);
+  font-size: 0.85em;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  margin-right: 2px;
+}
+
 /* Clickable source label */
 .source-label {
   cursor: pointer;
