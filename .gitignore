@@ -5,3 +5,9 @@ node_modules/
 *.crx
 *.pem
 *.zip
+
+# Video / media assets
+*.mp4
+*.mov
+*.webm
+*.avi
