@@ -1,0 +1,75 @@
+/**
+ * Loads background.js into a sandbox with a minimal chrome.* mock so the
+ * service worker's message handlers can be exercised from node:test.
+ *
+ * `storage` is passed in so a test can simulate a service worker restart:
+ * load a second background against the same storage object.
+ */
+
+const fs = require('node:fs');
+const path = require('node:path');
+const vm = require('node:vm');
+const { webcrypto } = require('node:crypto');
+
+const SOURCE = fs.readFileSync(path.join(__dirname, '..', 'background.js'), 'utf8');
+
+function createStorage(initial = {}) {
+  const data = structuredClone(initial);
+  return {
+    data,
+    async get(keys) {
+      if (keys == null) return structuredClone(data);
+      const list = Array.isArray(keys) ? keys : [keys];
+      const out = {};
+      for (const k of list) if (k in data) out[k] = structuredClone(data[k]);
+      return out;
+    },
+    async set(items) {
+      Object.assign(data, structuredClone(items));
+    },
+    async remove(keys) {
+      for (const k of Array.isArray(keys) ? keys : [keys]) delete data[k];
+    },
+  };
+}
+
+function loadBackground({ storage = createStorage(), sidePanelWindows = [1] } = {}) {
+  const noopEvent = { addListener() {} };
+  let onMessage = null;
+
+  const chrome = {
+    storage: { local: storage },
+    runtime: {
+      onMessage: { addListener: (fn) => (onMessage = fn) },
+      onStartup: noopEvent,
+      onInstalled: noopEvent,
+      sendMessage: async () => {},
+      getManifest: () => ({ version: 'test' }),
+      // Tests mutate `sidePanelWindows` to open/close the side panel.
+      getContexts: async ({ contextTypes }) =>
+        contextTypes.includes('SIDE_PANEL')
+          ? bg.sidePanelWindows.map((windowId) => ({ contextType: 'SIDE_PANEL', windowId }))
+          : [],
+    },
+    webNavigation: { onHistoryStateUpdated: noopEvent },
+    commands: { onCommand: noopEvent },
+    action: { onClicked: noopEvent, setBadgeText() {}, setBadgeBackgroundColor() {} },
+    sidePanel: { setPanelBehavior() {}, open() {} },
+    tabs: { query: (_q, cb) => cb && cb([]), sendMessage: async () => {} },
+  };
+
+  const context = vm.createContext({ chrome, crypto: webcrypto, console, structuredClone });
+  vm.runInContext(SOURCE, context, { filename: 'background.js' });
+
+  const bg = {
+    storage,
+    sidePanelWindows,
+    chrome,
+    send(message, sender = {}) {
+      return new Promise((resolve) => onMessage(message, sender, resolve));
+    },
+  };
+  return bg;
+}
+
+module.exports = { createStorage, loadBackground };

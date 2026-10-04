@@ -458,6 +458,9 @@ async function loadSession(sessionId) {
   const data = await chrome.storage.local.get(key);
   if (data[key]) {
     currentSession = data[key];
+    // Persist the pointer so a service worker restart restores this session
+    // instead of the previous one (or none, which would spawn a new session).
+    await chrome.storage.local.set({ currentSessionId: currentSession.id });
     return { session: currentSession };
   }
   return { error: 'Session not found' };
