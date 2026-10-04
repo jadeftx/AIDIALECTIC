@@ -255,6 +255,15 @@ async function handleCapture(message, sender) {
 // ===== Auto-Capture Handler =====
 
 async function handleAutoCapture(message, sender) {
+  // Auto-capture only feeds a session the user is looking at: never create a
+  // session behind their back, and ignore responses while the panel is closed.
+  if (!currentSession) {
+    return { error: 'No active session' };
+  }
+  if (!(await isSidePanelOpen())) {
+    return { error: 'Side panel closed' };
+  }
+
   const captureResult = await handleCapture(message, sender);
 
   if (captureResult.ok) {
@@ -270,6 +279,15 @@ async function handleAutoCapture(message, sender) {
   }
 
   return captureResult;
+}
+
+// The side panel document only exists while the panel is open, so query live
+// contexts rather than tracking open/close (state the worker loses on restart).
+// Chrome reports side panels with windowId -1, so this can't be per-window.
+async function isSidePanelOpen() {
+  if (!chrome.runtime.getContexts) return true; // Chrome < 116: keep old behaviour
+  const panels = await chrome.runtime.getContexts({ contextTypes: ['SIDE_PANEL'] });
+  return panels.length > 0;
 }
 
 // ===== Consensus =====
@@ -458,6 +476,9 @@ async function loadSession(sessionId) {
   const data = await chrome.storage.local.get(key);
   if (data[key]) {
     currentSession = data[key];
+    // Persist the pointer so a service worker restart restores this session
+    // instead of the previous one (or none, which would spawn a new session).
+    await chrome.storage.local.set({ currentSessionId: currentSession.id });
     return { session: currentSession };
   }
   return { error: 'Session not found' };
@@ -645,7 +666,7 @@ async function pushToGitHub(session, settings) {
 }
 
 // ===== Export Helpers =====
-// NOTE: Duplicated across sidepanel and background for MV3 service worker stability. Keep in sync.
+// NOTE: Duplicated in sidepanel/export.js for MV3 service worker stability. Keep in sync.
 
 function generateMarkdownExport(session) {
   const lines = [];
