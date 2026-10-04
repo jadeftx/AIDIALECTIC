@@ -33,7 +33,7 @@ function createStorage(initial = {}) {
   };
 }
 
-function loadBackground({ storage = createStorage(), sidePanelWindows = [1] } = {}) {
+function loadBackground({ storage = createStorage(), sidePanelOpen = true } = {}) {
   const noopEvent = { addListener() {} };
   let onMessage = null;
 
@@ -45,11 +45,9 @@ function loadBackground({ storage = createStorage(), sidePanelWindows = [1] } = 
       onInstalled: noopEvent,
       sendMessage: async () => {},
       getManifest: () => ({ version: 'test' }),
-      // Tests mutate `sidePanelWindows` to open/close the side panel.
+      // Chrome reports side panel contexts with windowId -1.
       getContexts: async ({ contextTypes }) =>
-        contextTypes.includes('SIDE_PANEL')
-          ? bg.sidePanelWindows.map((windowId) => ({ contextType: 'SIDE_PANEL', windowId }))
-          : [],
+        contextTypes.includes('SIDE_PANEL') && sidePanelOpen ? [{ contextType: 'SIDE_PANEL', windowId: -1 }] : [],
     },
     webNavigation: { onHistoryStateUpdated: noopEvent },
     commands: { onCommand: noopEvent },
@@ -63,7 +61,6 @@ function loadBackground({ storage = createStorage(), sidePanelWindows = [1] } = 
 
   const bg = {
     storage,
-    sidePanelWindows,
     chrome,
     send(message, sender = {}) {
       return new Promise((resolve) => onMessage(message, sender, resolve));
