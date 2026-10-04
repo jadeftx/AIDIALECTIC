@@ -90,16 +90,29 @@ The extension requires host access to claude.ai and gemini.google.com to paste y
 │   └── capture-button.css     # Floating arrow button styles
 ├── sidepanel/
 │   ├── sidepanel.html         # Side panel UI
-│   ├── sidepanel.js           # Session management, rendering, export
+│   ├── sidepanel.js           # Controller: boot, wires actions to store and views
+│   ├── session-store.js       # Current session state + background messaging (no DOM)
+│   ├── session-view.js        # Thread and status rendering
+│   ├── history-view.js        # Past sessions list
+│   ├── export.js              # Markdown/JSON download, GitHub push
+│   ├── settings-panel.js      # Settings modal, bulk export/import/clear
+│   ├── appearance.js          # Theme and zoom
+│   ├── dom.js                 # Element refs and toasts
 │   ├── sidepanel.css          # Light + dark themes
 │   ├── prompts.js             # Prompt generation (initial, handoff, modifiers)
 │   └── collapse.js            # Message collapse/expand behavior
+├── test/                      # node:test suites (npm test)
 ├── settings/
 │   ├── settings.html          # Standalone settings page
 │   └── settings.js            # Settings page logic
 └── utils/
     └── helpers.js             # Shared utility functions
 ```
+
+### Tests
+
+`npm install`, then `npm test`. The suites run `background.js` against a `chrome.*` mock and drive
+`sidepanel.html` in jsdom against that background.
 
 ### Keyboard Shortcut
 

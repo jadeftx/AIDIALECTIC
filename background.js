@@ -666,7 +666,7 @@ async function pushToGitHub(session, settings) {
 }
 
 // ===== Export Helpers =====
-// NOTE: Duplicated across sidepanel and background for MV3 service worker stability. Keep in sync.
+// NOTE: Duplicated in sidepanel/export.js for MV3 service worker stability. Keep in sync.
 
 function generateMarkdownExport(session) {
   const lines = [];

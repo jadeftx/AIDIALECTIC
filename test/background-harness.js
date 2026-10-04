@@ -13,27 +13,34 @@ const { webcrypto } = require('node:crypto');
 
 const SOURCE = fs.readFileSync(path.join(__dirname, '..', 'background.js'), 'utf8');
 
+// Supports both the promise style (background) and callback style (sidepanel).
 function createStorage(initial = {}) {
   const data = structuredClone(initial);
+  const done = (result, cb) => {
+    if (cb) cb(result);
+    return Promise.resolve(result);
+  };
   return {
     data,
-    async get(keys) {
-      if (keys == null) return structuredClone(data);
+    get(keys, cb) {
+      if (keys == null) return done(structuredClone(data), cb);
       const list = Array.isArray(keys) ? keys : [keys];
       const out = {};
       for (const k of list) if (k in data) out[k] = structuredClone(data[k]);
-      return out;
+      return done(out, cb);
     },
-    async set(items) {
+    set(items, cb) {
       Object.assign(data, structuredClone(items));
+      return done(undefined, cb);
     },
-    async remove(keys) {
+    remove(keys, cb) {
       for (const k of Array.isArray(keys) ? keys : [keys]) delete data[k];
+      return done(undefined, cb);
     },
   };
 }
 
-function loadBackground({ storage = createStorage(), sidePanelOpen = true } = {}) {
+function loadBackground({ storage = createStorage(), sidePanelOpen = true, onBroadcast = () => {} } = {}) {
   const noopEvent = { addListener() {} };
   let onMessage = null;
 
@@ -43,7 +50,7 @@ function loadBackground({ storage = createStorage(), sidePanelOpen = true } = {}
       onMessage: { addListener: (fn) => (onMessage = fn) },
       onStartup: noopEvent,
       onInstalled: noopEvent,
-      sendMessage: async () => {},
+      sendMessage: async (message) => onBroadcast(structuredClone(message)),
       getManifest: () => ({ version: 'test' }),
       // Chrome reports side panel contexts with windowId -1.
       getContexts: async ({ contextTypes }) =>
